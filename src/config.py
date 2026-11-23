@@ -1,10 +1,16 @@
+# Loads validated translator configuration from files, environment, and CLI values.
+
 from __future__ import annotations
 
 import json
 import os
+import re
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping
+
+from languages import SUPPORTED_TRANSLATION_LANGUAGES, resolve_translation_languages
 
 try:
     import tomllib  # Python 3.11+
@@ -37,7 +43,7 @@ class SonioxConfig:
     # @var enable_endpoint_detection: Whether pause detection finalizes speech.
     # @var api_key: Credential used to authenticate the stream.
     # --------------------------------------------------------------------------
-    # Default real-time transcription endpoint.
+    # Default real-time Soniox streaming endpoint.
     ws_url: str = "wss://stt-rt.soniox.com/transcribe-websocket"
     # Default Soniox model selected by the translator.
     model: str = "stt-rt-preview"
@@ -67,9 +73,26 @@ class TranslationConfig:
 class TriggerConfig:
     # Defines retained text and reset behavior for trigger processing.
     # --------------------------------------------------------------------------
+    # @var magic_phrase: Final spoken phrase that activates the response.
+    # @var magic_phrase_case_insensitive: Whether phrase matching ignores case.
+    # @var audio_file: MP3 played after the phrase is recognized.
+    # @var message: Subtitle message shown after the phrase is recognized.
+    # @var termination_phrases: Spoken phrases that stop the application.
     # @var detection_buffer_chars: Maximum retained trigger-search text length.
     # @var clear_buffers_on_trigger: Whether a trigger resets prior display state.
     # --------------------------------------------------------------------------
+    # Spoken phrase that activates the Iris response.
+    magic_phrase: str = "Iris?"
+    # Whether trigger matching ignores capitalization.
+    magic_phrase_case_insensitive: bool = True
+    # MP3 path, relative to the application root unless absolute.
+    audio_file: str = "assets/iris.mp3"
+    # Subtitle response shown when the magic phrase is recognized.
+    message: str = "At your service, Mr. Director"
+    # Bilingual commands that terminate the presentation application.
+    termination_phrases: tuple[str, ...] = (
+        "Iris, end the presentation",
+    )
     # Maximum number of characters retained for trigger matching.
     detection_buffer_chars: int = 600
     # Whether a successful trigger discards buffered content.
@@ -85,8 +108,12 @@ class UiConfig:
     # @var window_resizable: Whether the user may resize the window.
     # @var window_zoomed: Whether the window starts maximized.
     # @var window_keep_on_top: Whether the subtitle window stays above others.
+    # @var window_borderless: Whether the native title bar is removed.
+    # @var window_height_fraction: Fraction of screen height used by the overlay.
+    # @var window_alpha: Whole-window opacity from 0.0 through 1.0.
     # @var window_background_color: Tk background color.
     # @var window_text_color: Tk foreground color.
+    # @var window_new_text_color: Color used for the newest subtitle line.
     # @var window_font_family: Preferred text font family.
     # @var window_font_size: Text size in points.
     # @var window_font_weight: Text weight passed to Tk.
@@ -95,29 +122,37 @@ class UiConfig:
     # @var max_display_chars: Maximum characters retained before clipping.
     # --------------------------------------------------------------------------
     # Maximum wrapped subtitle lines displayed at once.
-    max_lines_on_screen: int = 12
+    max_lines_on_screen: int = 2
     # Approximate character width used for subtitle wrapping.
     max_line_chars_approx: int = 42
     # Whether the user can resize the subtitle window.
     window_resizable: bool = True
     # Whether the subtitle window opens maximized.
-    window_zoomed: bool = True
+    window_zoomed: bool = False
     # Whether the subtitle window remains on top of other windows.
     window_keep_on_top: bool = True
+    # Whether the subtitle overlay hides the native Windows title bar.
+    window_borderless: bool = True
+    # Fraction of the screen height used by the bottom subtitle stripe.
+    window_height_fraction: float = 0.20
+    # Whole-window opacity, where 1.0 is opaque and 0.0 is invisible.
+    window_alpha: float = 0.50
     # Background color passed to Tk.
     window_background_color: str = "black"
     # Foreground text color passed to Tk.
     window_text_color: str = "white"
+    # Foreground color used to highlight the newest subtitle line.
+    window_new_text_color: str = "yellow"
     # Preferred subtitle font family.
     window_font_family: str = "Segoe UI"
     # Subtitle font size in points.
-    window_font_size: int = 68
+    window_font_size: int = 36
     # Subtitle font weight passed to Tk.
     window_font_weight: str = "bold"
     # Horizontal subtitle padding in pixels.
     window_text_padding_x: int = 70
     # Vertical subtitle padding in pixels.
-    window_text_padding_y: int = 60
+    window_text_padding_y: int = 8
     # Maximum characters retained in the subtitle buffer.
     max_display_chars: int = 1200
 
@@ -172,26 +207,57 @@ class Settings:
             raise ValueError("audio.sample_rate must be > 0")
         if self.audio.channels <= 0:
             raise ValueError("audio.channels must be > 0")
+        if self.audio.audio_format != "pcm_s16le":
+            raise ValueError("audio.audio_format must be pcm_s16le")
         if not self.soniox.ws_url:
             raise ValueError("soniox.ws_url cannot be empty")
         if not self.soniox.model:
             raise ValueError("soniox.model cannot be empty")
         if not self.soniox.api_key:
             raise ValueError("SONIOX_API_KEY is required")
-        if not self.translation.source_language:
-            raise ValueError("translation source language cannot be empty")
-        if not self.translation.target_language:
-            raise ValueError("translation target language cannot be empty")
+        if self.translation.source_language not in SUPPORTED_TRANSLATION_LANGUAGES:
+            raise ValueError("translation source language is not supported")
+        if self.translation.target_language not in SUPPORTED_TRANSLATION_LANGUAGES:
+            raise ValueError("translation target language is not supported")
         if self.trigger.detection_buffer_chars <= 0:
             raise ValueError("trigger.detection_buffer_chars must be > 0")
+        if not self.trigger.magic_phrase:
+            raise ValueError("trigger.magic_phrase cannot be empty")
+        if not self.trigger.audio_file:
+            raise ValueError("trigger.audio_file cannot be empty")
+        if not self.trigger.message:
+            raise ValueError("trigger.message cannot be empty")
+        if not self.trigger.termination_phrases:
+            raise ValueError("trigger.termination_phrases cannot be empty")
+        if any(not phrase.strip() for phrase in self.trigger.termination_phrases):
+            raise ValueError("trigger.termination_phrases cannot contain empty phrases")
         if self.ui.max_lines_on_screen <= 0:
             raise ValueError("ui.max_lines_on_screen must be > 0")
         if self.ui.max_line_chars_approx <= 0:
             raise ValueError("ui.max_line_chars_approx must be > 0")
+        if self.ui.window_font_size <= 0:
+            raise ValueError("ui.window_font_size must be > 0")
+        if self.ui.window_text_padding_x < 0 or self.ui.window_text_padding_y < 0:
+            raise ValueError("ui.window_text_padding values must be >= 0")
+        if self.ui.max_display_chars <= 0:
+            raise ValueError("ui.max_display_chars must be > 0")
+        for color_name, color_value in (
+            ("window_background_color", self.ui.window_background_color),
+            ("window_text_color", self.ui.window_text_color),
+            ("window_new_text_color", self.ui.window_new_text_color),
+        ):
+            if not re.fullmatch(r"(?:#[0-9a-fA-F]{6}|[A-Za-z][A-Za-z0-9 ]*)", color_value.strip()):
+                raise ValueError(f"ui.{color_name} is not a valid Tk color")
         if self.performance.ui_tick_ms <= 0:
             raise ValueError("performance.ui_tick_ms must be > 0")
         if self.performance.audio_queue_max_chunks <= 0:
             raise ValueError("performance.audio_queue_max_chunks must be > 0")
+        if not 0.0 < self.ui.window_height_fraction <= 1.0:
+            raise ValueError("ui.window_height_fraction must be > 0 and <= 1")
+        if not 0.0 < self.ui.window_alpha <= 1.0:
+            raise ValueError("ui.window_alpha must be > 0 and <= 1")
+        if self.performance.clear_subtitles_after_seconds < 0:
+            raise ValueError("performance.clear_subtitles_after_seconds must be >= 0")
 
 
 def _to_bool(value: str, *, default: bool) -> bool:
@@ -261,6 +327,19 @@ def read_dotenv(path: Path) -> dict[str, str]:
     return out
 
 
+def application_root() -> Path:
+    # Returns the directory containing bundled runtime assets.
+    # --------------------------------------------------------------------------
+    # Packaged one-file applications unpack bundled assets into their runtime
+    # directory; normal source execution resolves assets from the project root.
+    # @return: Runtime directory containing packaged or source assets.
+    # --------------------------------------------------------------------------
+    bundled_root = getattr(sys, "_MEIPASS", None)
+    if bundled_root:
+        return Path(bundled_root)
+    return Path(__file__).resolve().parent.parent
+
+
 def _load_config_file(path: Path) -> dict[str, Any]:
     # Loads JSON or TOML configuration data from a selected file.
     # --------------------------------------------------------------------------
@@ -297,18 +376,22 @@ def _pick(m: Mapping[str, Any], key: str, default: Any) -> Any:
     return default if value is None else value
 
 
-def load_settings(*, source_language: str, target_language: str) -> Settings:
+def load_settings(
+    *,
+    source_language: str | None = None,
+    target_language: str | None = None,
+) -> Settings:
     # Loads, overlays, and validates all application settings.
     # --------------------------------------------------------------------------
     # Environment values override dotenv values, which override the optional config file.
-    # Translation direction is supplied separately by the command-line boundary.
-    # @param source_language: Normalized source language selected for this run.
-    # @param target_language: Normalized target language selected for this run.
+    # Command-line language values override the config file when supplied.
+    # @param source_language: Optional source-language override from the CLI.
+    # @param target_language: Optional target-language override from the CLI.
     # @return: Fully validated immutable settings object.
     # @throws ValueError: If resulting settings fail validation.
     # --------------------------------------------------------------------------
-    # resolve repository-relative configuration sources once for all sections.
-    root = Path(__file__).resolve().parent.parent
+    # resolve user-owned configuration from the process launch directory.
+    root = Path.cwd()
 
     # merge dotenv defaults with process values so process configuration wins.
     dotenv_values = read_dotenv(root / ".env")
@@ -352,10 +435,24 @@ def load_settings(*, source_language: str, target_language: str) -> Settings:
         api_key=env.get("SONIOX_API_KEY", str(_pick(soniox_cfg, "api_key", SonioxConfig.api_key))).strip(),
     )
 
-    # combine the CLI-owned direction with the configurable token-finality policy.
+    # resolve CLI, environment, and config-file language values before validation.
+    configured_source = env.get(
+        "IRIS_SOURCE_LANGUAGE",
+        str(_pick(translation_cfg, "source_language", "cs")),
+    )
+    configured_target = env.get(
+        "IRIS_TARGET_LANGUAGE",
+        str(_pick(translation_cfg, "target_language", "")),
+    ).strip() or None
+    resolved_source, resolved_target = resolve_translation_languages(
+        source_language or configured_source,
+        target_language if target_language is not None else configured_target,
+    )
+
+    # combine the resolved direction with the configurable token-finality policy.
     translation = TranslationConfig(
-        source_language=source_language,
-        target_language=target_language,
+        source_language=resolved_source,
+        target_language=resolved_target,
         display_only_final_translations=_to_bool(
             env.get(
                 "IRIS_DISPLAY_ONLY_FINAL_TRANSLATIONS",
@@ -371,8 +468,51 @@ def load_settings(*, source_language: str, target_language: str) -> Settings:
         ),
     )
 
+    # resolve termination phrases from an environment override or file sequence.
+    termination_value = env.get("IRIS_TERMINATION_PHRASES")
+    if termination_value is None:
+        termination_value = _pick(
+            trigger_cfg,
+            "termination_phrases",
+            TriggerConfig.termination_phrases,
+        )
+    if isinstance(termination_value, (list, tuple)):
+        termination_values = termination_value
+    else:
+        termination_values = (str(termination_value),)
+
     # construct the trigger-state section from layered values.
     trigger = TriggerConfig(
+        magic_phrase=env.get(
+            "IRIS_MAGIC_PHRASE",
+            str(_pick(trigger_cfg, "magic_phrase", TriggerConfig.magic_phrase)),
+        ).strip(),
+        magic_phrase_case_insensitive=_to_bool(
+            env.get(
+                "IRIS_MAGIC_PHRASE_CASE_INSENSITIVE",
+                str(
+                    _pick(
+                        trigger_cfg,
+                        "magic_phrase_case_insensitive",
+                        TriggerConfig.magic_phrase_case_insensitive,
+                    )
+                ),
+            ),
+            default=TriggerConfig.magic_phrase_case_insensitive,
+        ),
+        audio_file=env.get(
+            "IRIS_TRIGGER_AUDIO_FILE",
+            str(_pick(trigger_cfg, "audio_file", TriggerConfig.audio_file)),
+        ).strip(),
+        message=env.get(
+            "IRIS_TRIGGER_MESSAGE",
+            str(_pick(trigger_cfg, "message", TriggerConfig.message)),
+        ).strip(),
+        termination_phrases=tuple(
+            str(phrase).strip()
+            for phrase in termination_values
+            if str(phrase).strip()
+        ),
         detection_buffer_chars=_to_int(
             env.get(
                 "IRIS_MAGIC_DETECTION_BUFFER_CHARS",
@@ -417,6 +557,27 @@ def load_settings(*, source_language: str, target_language: str) -> Settings:
             ),
             default=UiConfig.window_keep_on_top,
         ),
+        window_borderless=_to_bool(
+            env.get(
+                "IRIS_WINDOW_BORDERLESS",
+                str(_pick(ui_cfg, "window_borderless", UiConfig.window_borderless)),
+            ),
+            default=UiConfig.window_borderless,
+        ),
+        window_height_fraction=_to_float(
+            env.get(
+                "IRIS_WINDOW_HEIGHT_FRACTION",
+                str(_pick(ui_cfg, "window_height_fraction", UiConfig.window_height_fraction)),
+            ),
+            default=UiConfig.window_height_fraction,
+        ),
+        window_alpha=_to_float(
+            env.get(
+                "IRIS_WINDOW_ALPHA",
+                str(_pick(ui_cfg, "window_alpha", UiConfig.window_alpha)),
+            ),
+            default=UiConfig.window_alpha,
+        ),
         window_background_color=env.get(
             "IRIS_WINDOW_BACKGROUND_COLOR",
             str(_pick(ui_cfg, "window_background_color", UiConfig.window_background_color)),
@@ -424,6 +585,10 @@ def load_settings(*, source_language: str, target_language: str) -> Settings:
         window_text_color=env.get(
             "IRIS_WINDOW_TEXT_COLOR",
             str(_pick(ui_cfg, "window_text_color", UiConfig.window_text_color)),
+        ),
+        window_new_text_color=env.get(
+            "IRIS_WINDOW_NEW_TEXT_COLOR",
+            str(_pick(ui_cfg, "window_new_text_color", UiConfig.window_new_text_color)),
         ),
         window_font_family=env.get(
             "IRIS_WINDOW_FONT_FAMILY",

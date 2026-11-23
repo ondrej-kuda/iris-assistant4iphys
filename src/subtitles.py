@@ -1,3 +1,4 @@
+# Stores thread-safe subtitle lines shared by Soniox and the Tk window.
 # =============================================================================
 #                              DATA STRUCTURES
 # =============================================================================
@@ -33,14 +34,19 @@ class SubtitleState:
         # @param lines: Formatted subtitle lines to append in display order.
         # @return: None.
         # ----------------------------------------------------------------------
+        # ignore empty formatting results so an empty token batch cannot clear
+        # the newest-line marker on otherwise valid subtitle content.
+        if not lines:
+            return
+
         # update all line metadata atomically for the UI reader.
         with self.lock:
             # clear the newest marker before designating incoming lines as current.
             for l in self.display_lines: l['last'] = False
 
             # preserve creation time and newest-line styling for each addition.
-            for line in lines: self.display_lines.append({'text':line, 'ts':time.time(), 'last':True})
-            print(self.display_lines)
+            for line in lines:
+                self.display_lines.append({'text': line, 'ts': time.time(), 'last': True})
     #end def
 
 
@@ -51,9 +57,9 @@ class SubtitleState:
         # ----------------------------------------------------------------------
         # perform trimming while holding the same lock used by readers and writers.
         with self.lock:
-            # discard an older batch when the line limit is exceeded.
-            if (len(self.display_lines) > self.max_lines):
-                while (len(self.display_lines) >= 4): del self.display_lines[0]
+            # retain exactly the newest configured number of display lines.
+            if len(self.display_lines) > self.max_lines:
+                self.display_lines = self.display_lines[-self.max_lines:]
         #end with
     #end def
 
@@ -66,6 +72,29 @@ class SubtitleState:
         # replace the list atomically so readers never observe a partial clear.
         with self.lock:
             self.display_lines = []
+    #end def
+
+
+    def clear_if_stale(self, max_age_seconds: float) -> bool:
+        # Clears subtitles after the configured idle timeout.
+        # ----------------------------------------------------------------------
+        # A non-positive timeout disables automatic clearing. The newest line's
+        # timestamp represents the last successful subtitle update.
+        # @param max_age_seconds: Idle duration before subtitles are cleared.
+        # @return: True when stale lines were removed.
+        # ----------------------------------------------------------------------
+        if max_age_seconds <= 0:
+            return False
+
+        # compare the newest retained timestamp while holding the state lock.
+        with self.lock:
+            if not self.display_lines:
+                return False
+            newest_timestamp = max(line["ts"] for line in self.display_lines)
+            if time.time() - newest_timestamp < max_age_seconds:
+                return False
+            self.display_lines = []
+            return True
     #end def
 
 
@@ -93,9 +122,11 @@ class SubtitleState:
         text = []
         self.clear_old()
         with self.lock:
+            # copy each dictionary so the producer cannot mutate a snapshot
+            # while Tk is rendering it on the UI thread.
             for line in self.display_lines:
-                text.append(line)
-        return text;
+                text.append(dict(line))
+        return text
     #end def
 
 #end class

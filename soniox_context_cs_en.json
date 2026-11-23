@@ -1,0 +1,544 @@
+{
+  "general": [
+    {
+      "key": "domain",
+      "value": "Institute of Physiology, Czech Academy of Sciences"
+    },
+    {
+      "key": "topic",
+      "value": "We describe basic biological mechanisms to improve the prevention, diagnosis and treatment of serious non-infectious diseases."
+    }
+  ],
+  "terms": [
+    "science",
+    "physiology",
+    "biology",
+    "research",
+    "animal models",
+    "neuroscience",
+    "cardiovascular physiology",
+    "metabolism"
+  ],
+  "translation_terms": [
+    {
+      "source": "Akademická sféra",
+      "target": "academic sector"
+    },
+    {
+      "source": "Aplikovaný výzkum",
+      "target": "applied research"
+    },
+    {
+      "source": "Cestovní výdaje",
+      "target": "travel expenses"
+    },
+    {
+      "source": "Centrum transferu technologií",
+      "target": "Technology Transfer Office (TTO)"
+    },
+    {
+      "source": "Česká grantová agentura",
+      "target": "Czech Science Foundation"
+    },
+    {
+      "source": "Česká zemědělská univerzita v Praze",
+      "target": "Czech University of Life Sciences Prague"
+    },
+    {
+      "source": "Člen vědecké společnosti",
+      "target": "fellow"
+    },
+    {
+      "source": "Členské státy EU",
+      "target": "EU Member States"
+    },
+    {
+      "source": "Disertace",
+      "target": "dissertation"
+    },
+    {
+      "source": "Dotace",
+      "target": "grant"
+    },
+    {
+      "source": "Dozorčí rada",
+      "target": "supervisory board"
+    },
+    {
+      "source": "předseda dozorčí rady",
+      "target": "supervisory board chairperson"
+    },
+    {
+      "source": "ERA",
+      "target": "European Research Area"
+    },
+    {
+      "source": "ERC",
+      "target": "European Research Council"
+    },
+    {
+      "source": "Etický kodex výzkumných pracovníků v Akademii věd",
+      "target": "Code of Ethics for Researchers at the Czech Academy of Sciences"
+    },
+    {
+      "source": "Eurokomisaři",
+      "target": "EU Commissioners"
+    },
+    {
+      "source": "Financování/finance",
+      "target": "funding"
+    },
+    {
+      "source": "Financující organizace",
+      "target": "funding body"
+    },
+    {
+      "source": "Grant malého rozsahu",
+      "target": "low-value grant"
+    },
+    {
+      "source": "Grantová dohoda/smlouva uzavřená za účelem poskytnutí grantu",
+      "target": "grant agreement"
+    },
+    {
+      "source": "Hodnocení výzkumné a odborné činnosti pracovišť AV ČR",
+      "target": "evaluation of research and professional activities of CAS institutes"
+    },
+    {
+      "source": "Hostitelská organizace",
+      "target": "host institution"
+    },
+    {
+      "source": "Hromadný dopis předsedy AV ČR",
+      "target": "bulk letter of the CAS President"
+    },
+    {
+      "source": "práva duševního vlastnictví",
+      "target": "intellectual property rights"
+    },
+    {
+      "source": "Institucionální prostředky",
+      "target": "institutional funding"
+    },
+    {
+      "source": "Jednací řád",
+      "target": "rules of procedure"
+    },
+    {
+      "source": "Kariérní řád vysokoškolsky vzdělaných pracovníků AV ČR",
+      "target": "Career Development Rules for CAS Employees with a University Degree"
+    },
+    {
+      "source": "Kolaborativní výzkum",
+      "target": "collaborative research"
+    },
+    {
+      "source": "Kolaborace",
+      "target": "large collaborations"
+    },
+    {
+      "source": "Kurz základů vědecké práce",
+      "target": "Course on the fundamentals of research work"
+    },
+    {
+      "source": "Manažer institucionální odolnosti v AV ČR",
+      "target": "Institutional Resilience Manager at CAS"
+    },
+    {
+      "source": "Mezinárodní poradní sbor",
+      "target": "International Advisory Board"
+    },
+    {
+      "source": "Mezinárodní vědecké organizace",
+      "target": "international scientific organisations"
+    },
+    {
+      "source": "Multilaterální výzkumná spolupráce",
+      "target": "multilateral research collaboration"
+    },
+    {
+      "source": "Nezpůsobilé náklady",
+      "target": "non-eligible costs"
+    },
+    {
+      "source": "Národní plán obnovy",
+      "target": "National Renewal Plan (NRP)"
+    },
+    {
+      "source": "Návrh projektu",
+      "target": "project proposal"
+    },
+    {
+      "source": "Obor",
+      "target": "field"
+    },
+    {
+      "source": "Oborová rada",
+      "target": "subject area board"
+    },
+    {
+      "source": "Odbor",
+      "target": "Division"
+    },
+    {
+      "source": "Oddělení",
+      "target": "Section"
+    },
+    {
+      "source": "Odborník na oblast",
+      "target": "expert in the field of"
+    },
+    {
+      "source": "Odborný garant",
+      "target": "expert guarantor"
+    },
+    {
+      "source": "Orgány státní správy na národní úrovni",
+      "target": "national authorities"
+    },
+    {
+      "source": "Podatelna",
+      "target": "filing office"
+    },
+    {
+      "source": "Podnikatelská sféra/sektor",
+      "target": "business sector"
+    },
+    {
+      "source": "Podobor",
+      "target": "subfield"
+    },
+    {
+      "source": "Pokyn Akademické rady",
+      "target": "Instruction of the Academy Council"
+    },
+    {
+      "source": "Postdoktorand",
+      "target": "postdoctoral researcher"
+    },
+    {
+      "source": "Posudek",
+      "target": "evaluation report, opinion"
+    },
+    {
+      "source": "Pracovní skupina",
+      "target": "working group"
+    },
+    {
+      "source": "Pracoviště AV ČR",
+      "target": "institutes of the Czech Academy of Sciences"
+    },
+    {
+      "source": "Projektová kancelář",
+      "target": "Project Office"
+    },
+    {
+      "source": "Prostředky dotace",
+      "target": "grant finances"
+    },
+    {
+      "source": "Průmysl založený na vědeckých poznatcích",
+      "target": "science-based industry"
+    },
+    {
+      "source": "Předseda Vědecké rady AV ČR",
+      "target": "President of the CAS Science Council"
+    },
+    {
+      "source": "Příjemce dotace",
+      "target": "grant recipient"
+    },
+    {
+      "source": "Přihláška",
+      "target": "application"
+    },
+    {
+      "source": "Rada pracoviště na ústavech AV ČR",
+      "target": "Board of the Institute"
+    },
+    {
+      "source": "Rada pro výzkum, vývoj a inovace",
+      "target": "Research, Development and Innovation Council"
+    },
+    {
+      "source": "Rada ústavu",
+      "target": "institute board"
+    },
+    {
+      "source": "předseda rady ústavu",
+      "target": "chairperson of the institute board"
+    },
+    {
+      "source": "Rada vědeckých společností",
+      "target": "Council of Scientific Societies"
+    },
+    {
+      "source": "Repozitář ASEP",
+      "target": "ASEP repository"
+    },
+    {
+      "source": "Rozhodnutí o poskytnutí dotace",
+      "target": "grant approval decision"
+    },
+    {
+      "source": "Rozpočtová kapitola AV ČR ve státním rozpočtu",
+      "target": "CAS category in the state budget"
+    },
+    {
+      "source": "Rozpočet",
+      "target": "budget"
+    },
+    {
+      "source": "Řešitel",
+      "target": "investigator"
+    },
+    {
+      "source": "Řídící výbor",
+      "target": "steering committee"
+    },
+    {
+      "source": "Slavnostní vyhlášení",
+      "target": "awards ceremony"
+    },
+    {
+      "source": "Shromáždění výzkumných pracovníků",
+      "target": "Assembly of Researchers"
+    },
+    {
+      "source": "Směrnice Akademické rady",
+      "target": "Guideline of the Academy Council"
+    },
+    {
+      "source": "Společné iniciativy/partnerské projekty",
+      "target": "joint initiatives"
+    },
+    {
+      "source": "Spoluřešitel",
+      "target": "co-investigator"
+    },
+    {
+      "source": "Stálý host",
+      "target": "permanent guest"
+    },
+    {
+      "source": "Středisko společných činností AV ČR",
+      "target": "CAS Centre of Administration and Operations"
+    },
+    {
+      "source": "Tajemník",
+      "target": "secretary"
+    },
+    {
+      "source": "Technicko-hospodářská správa",
+      "target": "technical-economic administration"
+    },
+    {
+      "source": "pracovníci technicko-hospodářské správy",
+      "target": "CAS technical and administrative staff"
+    },
+    {
+      "source": "Téma nebo oblast",
+      "target": "topic"
+    },
+    {
+      "source": "Transfer znalostí a technologií",
+      "target": "Knowledge and Technology Transfer (KTT)"
+    },
+    {
+      "source": "Učená společnost",
+      "target": "learned society"
+    },
+    {
+      "source": "Účast",
+      "target": "participation"
+    },
+    {
+      "source": "Účastník",
+      "target": "participant"
+    },
+    {
+      "source": "Účelové prostředky",
+      "target": "targeted support"
+    },
+    {
+      "source": "Ústavy AV ČR",
+      "target": "institutes of the Czech Academy of Sciences"
+    },
+    {
+      "source": "Vědecká obec",
+      "target": "research community"
+    },
+    {
+      "source": "Vědecké poradenství politické sféře",
+      "target": "scientific policy advice"
+    },
+    {
+      "source": "Vědecký pracovník",
+      "target": "researcher"
+    },
+    {
+      "source": "Vědecký titul",
+      "target": "scientific degree"
+    },
+    {
+      "source": "Veřejná výzkumná instituce",
+      "target": "public research institution"
+    },
+    {
+      "source": "Veřejný sektor",
+      "target": "public sector"
+    },
+    {
+      "source": "Veřejný subjekt zřízený ze zákona",
+      "target": "public body"
+    },
+    {
+      "source": "Vědecká společnost",
+      "target": "scientific society"
+    },
+    {
+      "source": "Vědecká spolupráce",
+      "target": "scientific collaboration"
+    },
+    {
+      "source": "Vědecké výměny či vědecké cesty",
+      "target": "mobility of researchers"
+    },
+    {
+      "source": "Vnitřní předpisy",
+      "target": "internal regulations"
+    },
+    {
+      "source": "Hodnocení výzkumu",
+      "target": "evaluation of research and professional activities of CAS institutes"
+    },
+    {
+      "source": "Vyhodnocení návrhu projektu",
+      "target": "evaluation of a project proposal"
+    },
+    {
+      "source": "Výkaznictví, pravidelné podávání zpráv",
+      "target": "reporting"
+    },
+    {
+      "source": "Výsledky výzkumu",
+      "target": "research results"
+    },
+    {
+      "source": "Výstup vědecký",
+      "target": "output"
+    },
+    {
+      "source": "Výzva k podání žádosti o dotaci",
+      "target": "call for grant application"
+    },
+    {
+      "source": "Výzkum, vývoj a inovace",
+      "target": "research, development and innovation (R&D&I)"
+    },
+    {
+      "source": "Výzkum financovaný z veřejných prostředků",
+      "target": "publicly funded research"
+    },
+    {
+      "source": "Výzkumná infrastruktura",
+      "target": "research infrastructure"
+    },
+    {
+      "source": "Výzkumné instituce",
+      "target": "research performing institutions"
+    },
+    {
+      "source": "Výzkumně-infrastrukturní pracoviště",
+      "target": "research-infrastructure focused institute"
+    },
+    {
+      "source": "Výzkumní pracovníci",
+      "target": "researchers"
+    },
+    {
+      "source": "Výzkumný program",
+      "target": "research programme"
+    },
+    {
+      "source": "Výzkumný záměr",
+      "target": "research plan/research proposal"
+    },
+    {
+      "source": "Výzva k podávání návrhů",
+      "target": "call for proposals"
+    },
+    {
+      "source": "Začínající nebo mladý vědec",
+      "target": "early career researcher"
+    },
+    {
+      "source": "Základní výzkum",
+      "target": "basic/fundamental research"
+    },
+    {
+      "source": "Způsobilé náklady",
+      "target": "eligible costs"
+    },
+    {
+      "source": "Zřizovací listina ústavu AV ČR",
+      "target": "founding charter of CAS institute"
+    },
+    {
+      "source": "Zřizovatel",
+      "target": "founder"
+    },
+    {
+      "source": "Žádost o poskytnutí dotace",
+      "target": "grant application"
+    },
+    {
+      "source": "Akademie věd ČR",
+      "target": "Czech Academy of Sciences (CAS)"
+    },
+    {
+      "source": "Akademická rada",
+      "target": "Academy Council"
+    },
+    {
+      "source": "Akademický sněm",
+      "target": "Academy Assembly"
+    },
+    {
+      "source": "Člen Akademické rady",
+      "target": "member of the Academy Council"
+    },
+    {
+      "source": "Dozorčí komise Akademického sněmu",
+      "target": "Supervisory Committee of the Academy Assembly"
+    },
+    {
+      "source": "Kancelář AV ČR",
+      "target": "CAS Head Office"
+    },
+    {
+      "source": "Komise pro etiku vědecké práce",
+      "target": "Scientific Integrity Committee of the CAS"
+    },
+    {
+      "source": "Místopředseda AV ČR",
+      "target": "Vice President (of the Czech Academy of Sciences)"
+    },
+    {
+      "source": "Předseda AV ČR",
+      "target": "President (of the Czech Academy of Sciences)"
+    },
+    {
+      "source": "Předsednictvo Akademické rady",
+      "target": "Academy Council Presidium"
+    },
+    {
+      "source": "Ústav AV ČR",
+      "target": "CAS institute"
+    },
+    {
+      "source": "Vědecká rada",
+      "target": "Science Council"
+    }
+  ]
+}

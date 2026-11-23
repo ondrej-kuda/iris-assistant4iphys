@@ -9,33 +9,39 @@ model = "stt-rt-v4"
 enable_endpoint_detection = true
 
 [translation]
+source_language = "cs"
+target_language = "en"
 display_only_final_translations = true
 
 [trigger]
-magic_phrase = "get ready"
+magic_phrase = "Iris?"
 magic_phrase_case_insensitive = true
-start_translation_phrase = "from czech to english"
 detection_buffer_chars = 600
 clear_buffers_on_trigger = true
-trigger1_audio_file = "to-your-service.mp3"
-trigger2_audio_file = "translate.mp3"
-trigger1_message = "To your service, Mr. Director!"
-trigger2_message = "I'll be happy to translate every word you say!"
+audio_file = "assets/iris.mp3"
+message = "At your service, Mr. Director"
+termination_phrases = ["Iris, end the presentation"]
 
 [ui]
-max_lines_on_screen = 12
 max_line_chars_approx = 42
 window_resizable = true
-window_zoomed = true
-window_keep_on_top = true
 window_background_color = "black"
 window_text_color = "white"
+window_new_text_color = "yellow"
 window_font_family = "Segoe UI"
-window_font_size = 68
 window_font_weight = "bold"
 window_text_padding_x = 70
-window_text_padding_y = 60
 max_display_chars = 1200
+
+window_borderless = true
+window_height_fraction = 0.20
+window_alpha = 0.80
+window_keep_on_top = true
+window_zoomed = false
+max_lines_on_screen = 2
+window_font_size = 36
+window_text_padding_y = 8
+
 
 [performance]
 ui_tick_ms = 60

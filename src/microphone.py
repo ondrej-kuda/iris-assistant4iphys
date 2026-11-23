@@ -108,10 +108,3 @@ def stop_input_stream(stream: sd.InputStream | None) -> None:
 #end def
 
 
-def list_devices() -> Any:
-    # Returns SoundDevice's available audio-device report.
-    # --------------------------------------------------------------------------
-    # @return: Device information returned by SoundDevice.
-    # --------------------------------------------------------------------------
-    return sd.query_devices()
-#end def
