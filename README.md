@@ -1,4 +1,4 @@
-# Iris Assistant
+# Iris Assistant <img src="assets/favicon.ico" alt="Iris Assistant icon" width="64" height="64" align="middle">
 
 ## Iris for IPHYS Assistant
 
